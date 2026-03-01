@@ -15,6 +15,13 @@ class UserRepository implements UserRepositoryInterface
         $this->eloquent = $eloquent;
     }
 
+    public function findById(int $id): User
+    {
+        return $this->eloquent->newQuery()
+            ->with('clinicalData')
+            ->findOrFail($id);
+    }
+
     public function findByEmail(string $email): ?User
     {
         return $this->eloquent->newQuery()

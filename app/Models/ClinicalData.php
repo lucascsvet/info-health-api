@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class ClinicalData extends Model
@@ -16,6 +17,41 @@ class ClinicalData extends Model
         'diseases',
         'surgeries',
     ];
+
+    protected $appends = [
+        'gender_description',
+        'blood_type_description',
+        'emergency_contact_name',
+        'emergency_contact_phone',
+    ];
+
+    public function genderDescription(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->gender?->description ?? '',
+        );
+    }
+
+    public function bloodTypeDescription(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->bloodType?->description ?? '',
+        );
+    }
+
+    public function emergencyContactName(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->emergencyContact?->name ?? '',
+        );
+    }
+
+    public function emergencyContactPhone(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->emergencyContact?->phone ?? '',
+        );
+    }
 
     public function user()
     {
