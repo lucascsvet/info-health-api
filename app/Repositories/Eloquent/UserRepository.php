@@ -21,4 +21,13 @@ class UserRepository implements UserRepositoryInterface
             ->where('email', $email)
             ->first();
     }
+
+    public function create(array $data): User
+    {
+        $user = $this->eloquent->newInstance();
+        $user->fill($data);
+        $user->save();
+
+        return $user;
+    }
 }
