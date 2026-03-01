@@ -1,0 +1,61 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Services\AuthService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+
+class AuthController extends Controller
+{
+    private $authService;
+    
+    public function __construct(
+        AuthService $authService
+    ) {
+        $this->authService = $authService;
+    }
+
+    public function login(LoginRequest $request): JsonResponse
+    {
+        try {
+            $result = $this->authService->login(
+                $request->validated('email'),
+                $request->validated('password')
+            );
+
+            return response()->json([
+                'user' => $result['user'],
+                'token' => $result['token'],
+                'token_type' => $result['token_type'],
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'As credenciais informadas não correspondem aos nossos registros.',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'message' => 'Erro interno do servidor. Tente novamente.',
+                'error' => config('app.debug') ? $e->getMessage() : null,
+            ], 500);
+        }
+    }
+
+    public function logout(Request $request): JsonResponse
+    {
+        $this->authService->logout($request->user());
+
+        return response()->json(['message' => 'Logout realizado com sucesso.']);
+    }
+
+    public function user(Request $request): JsonResponse
+    {
+        return response()->json($request->user());
+    }
+}
