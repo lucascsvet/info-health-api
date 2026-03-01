@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,11 +13,14 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     private $authService;
-    
+    private $userRepository;
+
     public function __construct(
-        AuthService $authService
+        AuthService $authService,
+        UserRepositoryInterface $userRepository
     ) {
         $this->authService = $authService;
+        $this->userRepository = $userRepository;
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -56,6 +60,10 @@ class AuthController extends Controller
 
     public function user(Request $request): JsonResponse
     {
-        return response()->json($request->user());
+        $user = $this->userRepository->findById($request->user()->id);
+
+        $user->makeVisible('public_password');
+
+        return response()->json($user);
     }
 }
