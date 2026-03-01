@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
 class LoginRequest extends FormRequest
 {
@@ -19,7 +18,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string', Password::defaults()],
+            'password' => ['required', 'string', 'min:6'],
         ];
     }
 
@@ -32,6 +31,7 @@ class LoginRequest extends FormRequest
             'email.required' => 'O campo email é obrigatório.',
             'email.email' => 'Digite um email válido.',
             'password.required' => 'O campo senha é obrigatório.',
+            'password.min' => 'A senha deve ter no mínimo 6 caracteres.',
         ];
     }
 }

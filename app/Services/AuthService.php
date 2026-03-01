@@ -9,9 +9,12 @@ use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
+    private $userRepository;
+
     public function __construct(
-        private readonly UserRepositoryInterface $userRepository
+        UserRepositoryInterface $userRepository
     ) {
+        $this->userRepository = $userRepository;
     }
 
     /**
