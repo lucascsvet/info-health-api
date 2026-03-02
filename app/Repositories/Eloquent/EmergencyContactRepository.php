@@ -31,4 +31,9 @@ class EmergencyContactRepository implements EmergencyContactRepositoryInterface
 
         return $contact;
     }
+
+    public function delete(EmergencyContact $contact): void
+    {
+        $contact->delete();
+    }
 }

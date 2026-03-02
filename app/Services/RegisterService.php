@@ -93,4 +93,16 @@ class RegisterService
             return $this->userRepository->findById($user->id);
         });
     }
+
+    public function delete(User $user): void
+    {
+        DB::transaction(function () use ($user) {
+            $user->tokens()->delete();
+            $emergencyContact = $user->clinicalData?->emergencyContact;
+            $this->userRepository->delete($user);
+            if ($emergencyContact) {
+                $this->emergencyContactRepository->delete($emergencyContact);
+            }
+        });
+    }
 }

@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Services\AuthService;
 use App\Services\RegisterService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -52,5 +53,16 @@ class RegisterController extends Controller
             'token' => $result['token'],
             'token_type' => $result['token_type'],
         ], 201);
+    }
+
+    public function destroy(Request $request): JsonResponse
+    {
+        if ($request->user()->currentAccessToken()->name === 'auth-public-token') {
+            return response()->json(['message' => 'Acesso negado.'], 403);
+        }
+
+        $this->registerService->delete($request->user());
+
+        return response()->json(['message' => 'Conta excluída com sucesso.']);
     }
 }
