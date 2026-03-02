@@ -9,4 +9,6 @@ interface EmergencyContactRepositoryInterface
     public function create(array $data): EmergencyContact;
 
     public function update(EmergencyContact $contact, array $data): EmergencyContact;
+
+    public function delete(EmergencyContact $contact): void;
 }
