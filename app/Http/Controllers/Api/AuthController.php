@@ -91,7 +91,9 @@ class AuthController extends Controller
     {
         $user = $this->userRepository->findById($request->user()->id);
 
-        $user->makeVisible('public_password');
+        if ($request->user()->currentAccessToken()->name !== 'auth-public-token') {
+            $user->makeVisible('public_password');
+        }
 
         return response()->json($user);
     }

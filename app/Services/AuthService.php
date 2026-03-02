@@ -54,7 +54,7 @@ class AuthService
             ]);
         }
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->createToken('auth-public-token')->plainTextToken;
 
         return [
             'user' => $user,
