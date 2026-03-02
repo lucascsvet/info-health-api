@@ -53,6 +53,15 @@ class AuthController extends Controller
         }
     }
 
+    public function userExists(int $id): JsonResponse
+    {
+        if (!$this->userRepository->exists($id)) {
+            return response()->json(['message' => 'Usuário não encontrado.'], 404);
+        }
+
+        return response()->json(['exists' => true]);
+    }
+
     public function publicLogin(PublicLoginRequest $request): JsonResponse
     {
         try {
