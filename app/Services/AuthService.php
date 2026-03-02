@@ -62,4 +62,16 @@ class AuthService
             'token_type' => 'Bearer',
         ];
     }
+
+    public function changePassword(User $user, string $currentPassword, string $newPassword): void
+    {
+        if (!Hash::check($currentPassword, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['A senha atual está incorreta.'],
+            ]);
+        }
+
+        $user->password = $newPassword;
+        $user->save();
+    }
 }
