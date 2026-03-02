@@ -36,6 +36,7 @@ class AuthController extends Controller
                 'user' => $result['user'],
                 'token' => $result['token'],
                 'token_type' => $result['token_type'],
+                'is_public_login' => false,
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -64,6 +65,7 @@ class AuthController extends Controller
                 'user' => $result['user'],
                 'token' => $result['token'],
                 'token_type' => $result['token_type'],
+                'is_public_login' => true,
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -90,11 +92,15 @@ class AuthController extends Controller
     public function user(Request $request): JsonResponse
     {
         $user = $this->userRepository->findById($request->user()->id);
+        $isPublicLogin = $request->user()->currentAccessToken()->name === 'auth-public-token';
 
-        if ($request->user()->currentAccessToken()->name !== 'auth-public-token') {
+        if (!$isPublicLogin) {
             $user->makeVisible('public_password');
         }
 
-        return response()->json($user);
+        $data = $user->toArray();
+        $data['is_public_login'] = $isPublicLogin;
+
+        return response()->json($data);
     }
 }
