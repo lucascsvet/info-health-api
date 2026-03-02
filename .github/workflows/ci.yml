@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run tests with Docker
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/var/www \
+            -w /var/www \
+            php:8.2-cli bash -c "
+              apt-get update -qq && apt-get install -y -qq git unzip libzip-dev libxml2-dev libsqlite3-dev > /dev/null &&
+              docker-php-ext-install -q pdo pdo_sqlite zip xml mbstring &&
+              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
+              composer install --prefer-dist --no-progress --no-interaction &&
+              cp .env.example .env &&
+              php artisan key:generate &&
+              php artisan test
+            "
