@@ -22,6 +22,11 @@ class UserRepository implements UserRepositoryInterface
             ->findOrFail($id);
     }
 
+    public function exists(int $id): bool
+    {
+        return $this->eloquent->newQuery()->where('id', $id)->exists();
+    }
+
     public function findByEmail(string $email): ?User
     {
         return $this->eloquent->newQuery()
