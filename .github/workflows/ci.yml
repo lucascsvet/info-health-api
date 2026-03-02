@@ -21,7 +21,7 @@ jobs:
             -w /var/www \
             php:8.2-cli bash -c "
               apt-get update -qq && apt-get install -y -qq git unzip libzip-dev libxml2-dev libsqlite3-dev > /dev/null &&
-              docker-php-ext-install -q pdo pdo_sqlite zip xml mbstring &&
+              docker-php-ext-install pdo pdo_sqlite zip xml mbstring &&
               curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
               composer install --prefer-dist --no-progress --no-interaction &&
               cp .env.example .env &&
