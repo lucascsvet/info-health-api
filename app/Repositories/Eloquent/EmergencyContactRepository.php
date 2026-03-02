@@ -23,4 +23,12 @@ class EmergencyContactRepository implements EmergencyContactRepositoryInterface
 
         return $contact;
     }
+
+    public function update(EmergencyContact $contact, array $data): EmergencyContact
+    {
+        $contact->fill($data);
+        $contact->save();
+
+        return $contact;
+    }
 }

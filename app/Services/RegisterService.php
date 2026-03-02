@@ -56,4 +56,41 @@ class RegisterService
             return $user;
         });
     }
+
+    public function update(User $user, array $data): User
+    {
+        return DB::transaction(function () use ($user, $data) {
+            $clinicalData = $user->clinicalData;
+            $emergencyContact = $clinicalData?->emergencyContact;
+
+            if ($emergencyContact) {
+                $this->emergencyContactRepository->update($emergencyContact, [
+                    'name' => $data['emergency_contact_name'],
+                    'phone' => $data['emergency_contact_phone'],
+                ]);
+            }
+
+            $this->userRepository->update($user, [
+                'cpf' => $data['cpf'],
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'phone' => $data['phone'],
+                'email' => $data['email'],
+                'public_password' => $data['public_password'],
+            ]);
+
+            if ($clinicalData) {
+                $this->clinicalDataRepository->update($clinicalData, [
+                    'gender' => $data['gender'],
+                    'blood_type' => $data['blood_type'],
+                    'allergies' => $data['allergies'] ?? null,
+                    'medications' => $data['medications'] ?? null,
+                    'diseases' => $data['diseases'] ?? null,
+                    'surgeries' => $data['surgeries'] ?? null,
+                ]);
+            }
+
+            return $this->userRepository->findById($user->id);
+        });
+    }
 }

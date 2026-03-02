@@ -37,4 +37,12 @@ class UserRepository implements UserRepositoryInterface
 
         return $user;
     }
+
+    public function update(User $user, array $data): User
+    {
+        $user->fill($data);
+        $user->save();
+
+        return $user;
+    }
 }

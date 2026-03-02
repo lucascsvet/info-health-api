@@ -23,4 +23,12 @@ class ClinicalDataRepository implements ClinicalDataRepositoryInterface
 
         return $clinicalData;
     }
+
+    public function update(ClinicalData $clinicalData, array $data): ClinicalData
+    {
+        $clinicalData->fill($data);
+        $clinicalData->save();
+
+        return $clinicalData;
+    }
 }
