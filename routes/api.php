@@ -10,6 +10,7 @@ Route::get('/health', fn () => response()->json(['status' => 'ok']));
 Route::get('/genders', [GenderController::class, 'all']);
 Route::get('/blood-types', [BloodTypeController::class, 'all']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login-publico', [AuthController::class, 'publicLogin']);
 Route::post('/register', [RegisterController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
