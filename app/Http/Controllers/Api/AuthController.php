@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\PublicLoginRequest;
 use App\Repositories\Contracts\UserRepositoryInterface;
@@ -96,6 +97,28 @@ class AuthController extends Controller
         $this->authService->logout($request->user());
 
         return response()->json(['message' => 'Logout realizado com sucesso.']);
+    }
+
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
+    {
+        if ($request->user()->currentAccessToken()->name === 'auth-public-token') {
+            return response()->json(['message' => 'Acesso negado.'], 403);
+        }
+
+        try {
+            $this->authService->changePassword(
+                $request->user(),
+                $request->validated('current_password'),
+                $request->validated('password')
+            );
+
+            return response()->json(['message' => 'Senha alterada com sucesso.']);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Não foi possível alterar a senha.',
+                'errors' => $e->errors(),
+            ], 422);
+        }
     }
 
     public function user(Request $request): JsonResponse
