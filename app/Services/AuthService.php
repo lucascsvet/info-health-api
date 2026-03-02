@@ -43,4 +43,23 @@ class AuthService
     {
         $user->currentAccessToken()->delete();
     }
+
+    public function publicLogin(int $userId, string $publicPassword): array
+    {
+        $user = $this->userRepository->findById($userId);
+
+        if ($user->getAttribute('public_password') !== $publicPassword) {
+            throw ValidationException::withMessages([
+                'public_password' => ['A senha pública informada não está correta.'],
+            ]);
+        }
+
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return [
+            'user' => $user,
+            'token' => $token,
+            'token_type' => 'Bearer',
+        ];
+    }
 }
