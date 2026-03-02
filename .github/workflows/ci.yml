@@ -19,12 +19,19 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}:/var/www \
             -w /var/www \
+            -e DEBIAN_FRONTEND=noninteractive \
             php:8.2-cli bash -c "
               apt-get update -qq && apt-get install -y -qq git unzip libzip-dev libxml2-dev libsqlite3-dev libonig-dev > /dev/null &&
               docker-php-ext-install pdo pdo_sqlite zip xml mbstring &&
               curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
+              git config --global --add safe.directory /var/www &&
               composer install --prefer-dist --no-progress --no-interaction &&
-              cp .env.example .env &&
+              echo 'APP_NAME=Laravel' > .env &&
+              echo 'APP_ENV=testing' >> .env &&
+              echo 'APP_DEBUG=true' >> .env &&
+              echo 'APP_URL=http://localhost' >> .env &&
+              echo 'DB_CONNECTION=sqlite' >> .env &&
+              echo 'DB_DATABASE=:memory:' >> .env &&
               php artisan key:generate &&
               php artisan test
             "
