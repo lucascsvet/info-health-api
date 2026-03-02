@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Services\AuthService;
 use App\Services\RegisterService;
 use Illuminate\Http\JsonResponse;
@@ -19,6 +20,22 @@ class RegisterController extends Controller
     ) {
         $this->registerService = $registerService;
         $this->authService = $authService;
+    }
+
+    public function update(UpdateUserRequest $request): JsonResponse
+    {
+        if ($request->user()->currentAccessToken()->name === 'auth-public-token') {
+            return response()->json(['message' => 'Acesso negado.'], 403);
+        }
+
+        $user = $this->registerService->update($request->user(), $request->validated());
+
+        $user->makeVisible('public_password');
+
+        $data = $user->toArray();
+        $data['is_public_login'] = false;
+
+        return response()->json($data);
     }
 
     public function register(RegisterRequest $request): JsonResponse
